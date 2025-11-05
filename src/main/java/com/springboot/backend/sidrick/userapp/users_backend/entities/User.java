@@ -20,6 +20,8 @@ public class User {
     private String name;
     //It is important that the front-end names for the variable are written the same as in the back-end.
     //In this case, we chose to write the same name in both places. Othewise, you could use @Column(...) annotation.
+    //By default, Hibernate uses a naming strategy that converts camelCase to snake_case, so we had to change the column name in the database to last_name. Using
+    //the @Column(name="lastName") annotation does NOT override this naming convention.
     private String lastName;
     private String email;
     private String username;
