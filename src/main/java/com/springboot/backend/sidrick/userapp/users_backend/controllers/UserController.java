@@ -56,7 +56,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save(user));
     }
     
-    //This function includes a check whether the user being edited exists at all
+    //This function includes a check whether the user being edited exists at all.
+    //As seen during Postman testing, every column must be included in the request body. Whichever column is not included, the corresponding result will be 
+    //null in the table.
     @PutMapping("/{id}")
     public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User user) {
         Optional<User> userOptional = service.findById(id);
