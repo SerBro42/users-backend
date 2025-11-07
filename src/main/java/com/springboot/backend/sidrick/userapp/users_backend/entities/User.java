@@ -21,7 +21,7 @@ public class User {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @NotEmpty
+    @NotBlank
     private String name;
 
     //It is important that the front-end names for the variable are written the same as in the back-end.

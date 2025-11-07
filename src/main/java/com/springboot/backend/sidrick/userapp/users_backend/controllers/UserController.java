@@ -5,13 +5,18 @@ import org.springframework.web.bind.annotation.RestController;
 import com.springboot.backend.sidrick.userapp.users_backend.entities.User;
 import com.springboot.backend.sidrick.userapp.users_backend.services.UserService;
 
+import jakarta.validation.Valid;
+
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,7 +58,10 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> create(@RequestBody User user) {
+    public ResponseEntity<?> create(@Valid @RequestBody User user, BindingResult result) {
+        if(result.hasErrors()) {
+            return validation(result);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save(user));
     }
     
@@ -61,7 +69,12 @@ public class UserController {
     //As seen during Postman testing, every column must be included in the request body. Whichever column is not included, the corresponding result will be 
     //null in the table.
     @PutMapping("/{id}")
-    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<?> update(@Valid @RequestBody User user, BindingResult result, @PathVariable Long id) {
+
+        if(result.hasErrors()) {
+            return validation(result);
+        }
+
         Optional<User> userOptional = service.findById(id);
         if(userOptional.isPresent()) {
             User userDb = userOptional.get();
@@ -83,5 +96,13 @@ public class UserController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+    
+    private ResponseEntity<?> validation(BindingResult result) {
+        Map<String, String> errors = new HashMap<>();
+        result.getFieldErrors().forEach(error -> {
+            errors.put(error.getField(), "The field " + error.getField() +" "+ error.getDefaultMessage());
+        });
+        return ResponseEntity.badRequest().body(errors);
     }
 }
