@@ -1,5 +1,7 @@
 package com.springboot.backend.sidrick.userapp.users_backend.repositories;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 
 import com.springboot.backend.sidrick.userapp.users_backend.entities.User;
@@ -9,5 +11,6 @@ import com.springboot.backend.sidrick.userapp.users_backend.entities.User;
 //we're using the repository for, along with the data type for its primary key (id Long in this case).
 //Ctrl + click to see all the methods available in CrudRepository
 public interface UserRepository extends CrudRepository<User, Long>{
-
+    
+    Page<User> findAll(Pageable pageable);
 }
