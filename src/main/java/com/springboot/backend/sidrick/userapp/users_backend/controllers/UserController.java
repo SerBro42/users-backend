@@ -46,8 +46,9 @@ public class UserController {
         return service.findAll();
     }
 
+    //After implementing Spring Security, an explicit path variable name had to be added ("page")
     @GetMapping("/page/{page}")
-    public Page<User> listPageable(@PathVariable Integer page) {
+    public Page<User> listPageable(@PathVariable("page") Integer page) {
         Pageable pageable = PageRequest.of(page, 5);
         return service.findAll(pageable);
     }
