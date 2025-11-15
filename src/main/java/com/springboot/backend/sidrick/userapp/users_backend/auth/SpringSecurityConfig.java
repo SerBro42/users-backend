@@ -10,12 +10,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SpringSecurityConfig {
 
-    private final SecurityFilterChain filterChain;
-
-    SpringSecurityConfig(SecurityFilterChain filterChain) {
-        this.filterChain = filterChain;
-    }
-
     //We annotate it as a Bean so that it gets registered in the Spring Container as a Component.
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
