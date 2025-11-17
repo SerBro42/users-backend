@@ -1,6 +1,9 @@
 package com.springboot.backend.sidrick.userapp.users_backend.auth.filter;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -60,11 +63,24 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User) authResult.getPrincipal();
                 String username = user.getUsername();
 
-                String jws = Jwts.builder()
+                String jwt = Jwts.builder()
                     .subject(username)
                     .signWith(SECRET_KEY)
+                    .issuedAt(new Date())
+                    .expiration(new Date(System.currentTimeMillis() + 3600000))
                 .compact();
-    }
+
+                response.addHeader("Authorization", "Bearer " + jwt);
+
+                Map<String, String> body = new HashMap<>();
+                body.put("token", jwt);
+                body.put("username", username);
+                body.put("message", String.format("Wellcome, %s, you have logged in successfully", username));
+
+                response.getWriter().write(new ObjectMapper().writeValueAsString(body));
+                response.setContentType("application/json");
+                response.setStatus(200);
+    }       
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
