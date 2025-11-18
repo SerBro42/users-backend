@@ -69,7 +69,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
                 Claims claims = Jwts
                     .claims()
-                    .add("authorities", new ObjectMapper().writeValueAsString(roles))
+                    .add("roles", new ObjectMapper().writeValueAsString(roles))
                     .add("username", username)
                     .build();
 
@@ -96,5 +96,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException failed) throws IOException, ServletException {
+
+            Map<String, String> body = new HashMap<>();
+            body.put("message", "Authentication error. Wrong user name and/or password");
+            body.put("error", failed.getMessage());
+
+            response.getWriter().write(new ObjectMapper().writeValueAsString(body));
+            response.setContentType(CONTENT_TYPE);
+            response.setStatus(401);
     }   
 }
