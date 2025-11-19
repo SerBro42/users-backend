@@ -3,13 +3,24 @@ package com.springboot.backend.sidrick.userapp.users_backend.auth.filter;
 import static com.springboot.backend.sidrick.userapp.users_backend.auth.TokenJwtConfig.*;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.lang.Arrays;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,10 +47,23 @@ public class JwtValidationFilter extends BasicAuthenticationFilter{
         try {
             Claims claims = Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token).getPayload();
             String username = claims.getSubject();
-            String username2 = (String) claims.get("username");
+            //String username2 = (String) claims.get("username");
             Object authoritiesClaims = claims.get("authorities");
-        } catch (JwtException e) {
 
+            Collection<? extends GrantedAuthority> roles = Arrays.asList(new ObjectMapper()
+                .readValue(authoritiesClaims.toString().getBytes(), SimpleGrantedAuthority[].class));
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, 
+                roles);
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            chain.doFilter(request, response);
+            
+        } catch (JwtException e) {
+            Map<String, String> body = new HashMap<>();
+            body.put("error", e.getMessage());
+            body.put("message", "The token is invalid");
+
+            response.getWriter().write(new ObjectMapper().writeValueAsString(body));
+            response.setContentType(CONTENT_TYPE);
         }
     }
 
