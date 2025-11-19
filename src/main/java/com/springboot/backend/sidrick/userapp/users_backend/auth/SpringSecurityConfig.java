@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.springboot.backend.sidrick.userapp.users_backend.auth.filter.JwtAuthenticationFilter;
+import com.springboot.backend.sidrick.userapp.users_backend.auth.filter.JwtValidationFilter;
 
 @Configuration
 public class SpringSecurityConfig {
@@ -45,6 +46,7 @@ public class SpringSecurityConfig {
         .requestMatchers(HttpMethod.DELETE, "/api/users/{id}").hasRole("ADMIN")
         .anyRequest().authenticated())
         .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+        .addFilter(new JwtValidationFilter(authenticationManager()))
         .csrf(config -> config.disable())
         .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .build();
