@@ -57,7 +57,7 @@ public class UserController {
     //In our UserService, the findById() method returns an optional, so we must create an additional check for null objects.
     //We use ResponsEntity so that it returns a 200 or 400 response, depending if the object was found.
     @GetMapping("/{id}")
-    public ResponseEntity<?> show(@PathVariable Long id) {
+    public ResponseEntity<?> show(@PathVariable("id") Long id) {
         Optional<User> userOptional = service.findById(id);
         if(userOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(userOptional.orElseThrow());
@@ -79,7 +79,7 @@ public class UserController {
     //As seen during Postman testing, every column must be included in the request body. Whichever column is not included, the corresponding result will be 
     //null in the table.
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@Valid @RequestBody User user, BindingResult result, @PathVariable Long id) {
+    public ResponseEntity<?> update(@Valid @RequestBody User user, BindingResult result, @PathVariable("id") Long id) {
 
         if(result.hasErrors()) {
             return validation(result);
@@ -99,7 +99,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         Optional<User> userOptional = service.findById(id);
         if(userOptional.isPresent()) {
             service.deleteById(id);
