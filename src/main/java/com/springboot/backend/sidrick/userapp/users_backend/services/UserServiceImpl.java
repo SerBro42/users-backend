@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +22,12 @@ public class UserServiceImpl implements UserService{
     //@Autowired
     private UserRepository repository;
 
-    public UserServiceImpl(UserRepository repository) {
+    //Adding another variable that will be part of the constructor.
+    private PasswordEncoder passwordEncoder;
+
+    public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     //ReadOnly = true is used when this query is only to consult data, never to edit it.
@@ -47,7 +53,26 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public User save(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return repository.save(user);
+    }
+
+    //We restructure our code by adding an update method in this Class by copying (and later cutting) the code from UserController.
+    @Override
+    public Optional<User> update(User user, Long id) {
+        Optional<User> userOptional = repository.findById(id);
+
+        if(userOptional.isPresent()) {
+            User userDb = userOptional.get();
+            userDb.setEmail(user.getEmail());
+            userDb.setLastName(user.getLastName());
+            userDb.setName(user.getName());
+            //This line for password editing has been removed, because there is a separate Security function for that purpose specifically.
+            userDb.setUsername(user.getUsername());
+            
+            return Optional.of(repository.save(userDb));
+        }
+        return Optional.empty();
     }
 
     @Override

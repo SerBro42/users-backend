@@ -78,6 +78,7 @@ public class UserController {
     //This function includes a check whether the user being edited exists at all.
     //As seen during Postman testing, every column must be included in the request body. Whichever column is not included, the corresponding result will be 
     //null in the table.
+    //Following the "clean code" principle, we extracted several lines of userDb.set... from here and put it in UserServiceImpl, so that every class has a definite purpose.
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@Valid @RequestBody User user, BindingResult result, @PathVariable("id") Long id) {
 
@@ -85,15 +86,10 @@ public class UserController {
             return validation(result);
         }
 
-        Optional<User> userOptional = service.findById(id);
+        Optional<User> userOptional = service.update(user, id);
+
         if(userOptional.isPresent()) {
-            User userDb = userOptional.get();
-            userDb.setEmail(user.getEmail());
-            userDb.setLastName(user.getLastName());
-            userDb.setName(user.getName());
-            userDb.setPassword(user.getPassword());
-            userDb.setUsername(user.getUsername());
-            return ResponseEntity.ok(service.save(userDb));
+            return ResponseEntity.ok(userOptional.orElseThrow());
         }
         return ResponseEntity.notFound().build();
     }

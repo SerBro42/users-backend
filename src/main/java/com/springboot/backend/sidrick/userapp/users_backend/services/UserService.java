@@ -21,5 +21,7 @@ public interface UserService {
 
     User save(User user);
 
+    Optional<User> update(User user, Long id);
+
     void deleteById(Long id);
 }
