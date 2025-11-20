@@ -3,6 +3,7 @@ package com.springboot.backend.sidrick.userapp.users_backend.controllers;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springboot.backend.sidrick.userapp.users_backend.entities.User;
+import com.springboot.backend.sidrick.userapp.users_backend.models.UserRequest;
 import com.springboot.backend.sidrick.userapp.users_backend.services.UserService;
 
 import jakarta.validation.Valid;
@@ -80,7 +81,7 @@ public class UserController {
     //null in the table.
     //Following the "clean code" principle, we extracted several lines of userDb.set... from here and put it in UserServiceImpl, so that every class has a definite purpose.
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@Valid @RequestBody User user, BindingResult result, @PathVariable("id") Long id) {
+    public ResponseEntity<?> update(@Valid @RequestBody UserRequest user, BindingResult result, @PathVariable("id") Long id) {
 
         if(result.hasErrors()) {
             return validation(result);

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.backend.sidrick.userapp.users_backend.entities.User;
+import com.springboot.backend.sidrick.userapp.users_backend.models.UserRequest;
 import com.springboot.backend.sidrick.userapp.users_backend.repositories.UserRepository;
 
 import io.micrometer.common.lang.NonNull;
@@ -59,7 +60,7 @@ public class UserServiceImpl implements UserService{
 
     //We restructure our code by adding an update method in this Class by copying (and later cutting) the code from UserController.
     @Override
-    public Optional<User> update(User user, Long id) {
+    public Optional<User> update(UserRequest user, Long id) {
         Optional<User> userOptional = repository.findById(id);
 
         if(userOptional.isPresent()) {

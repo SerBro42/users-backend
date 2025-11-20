@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.springboot.backend.sidrick.userapp.users_backend.entities.User;
+import com.springboot.backend.sidrick.userapp.users_backend.models.UserRequest;
 
 import io.micrometer.common.lang.NonNull;
 
@@ -21,7 +22,7 @@ public interface UserService {
 
     User save(User user);
 
-    Optional<User> update(User user, Long id);
+    Optional<User> update(UserRequest user, Long id);
 
     void deleteById(Long id);
 }
