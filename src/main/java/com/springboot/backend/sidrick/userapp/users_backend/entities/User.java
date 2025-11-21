@@ -9,24 +9,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.springboot.backend.sidrick.userapp.users_backend.models.IUser;
 
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import net.bytebuddy.dynamic.TypeResolutionStrategy.Lazy;
 
 //By convention, the tables in databases are called in plural, whereas the Java Entity class is called in
 //singular, because the Entity is an instance.
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements IUser{
 
     //GenerationType IDENTITY means that the primary key is auto-incrementing.
     @Id
@@ -50,6 +52,11 @@ public class User {
     @NotBlank
     @Size(min=4)
     private String username;
+
+    //The annotation Transient means that this field is not part of the database, it is merely an attribute of the class.
+    @Transient
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private boolean admin;
 
     @NotBlank
     private String password;
@@ -121,6 +128,12 @@ public class User {
         this.roles = roles;
     }
 
-    
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
     
 }

@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 
 //This class is created specifically for PUT HTTP requests, because POST has its own, separate functionality. This request does not include the Password field, because the latter will be dealt with separately
 //just in PUT requests.
-public class UserRequest {
+public class UserRequest implements IUser{
 
     @NotBlank
     private String name;
@@ -22,6 +22,8 @@ public class UserRequest {
     @NotBlank
     @Size(min=4)
     private String username;
+
+    private boolean admin;
 
     public String getName() {
         return name;
@@ -55,4 +57,11 @@ public class UserRequest {
         this.username = username;
     }
 
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
 }

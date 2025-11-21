@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.backend.sidrick.userapp.users_backend.entities.Role;
 import com.springboot.backend.sidrick.userapp.users_backend.entities.User;
+import com.springboot.backend.sidrick.userapp.users_backend.models.IUser;
 import com.springboot.backend.sidrick.userapp.users_backend.models.UserRequest;
 import com.springboot.backend.sidrick.userapp.users_backend.repositories.RoleRepository;
 import com.springboot.backend.sidrick.userapp.users_backend.repositories.UserRepository;
@@ -60,13 +61,8 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public User save(User user) {
-        List<Role> roles = new ArrayList<>();
-        Optional<Role> optionalRoleUser = roleRepository.findByName("ROLE_USER");
 
-        //Callback with method reference: roles::add, as an alternative to 'role -> roles.add(role)'
-        optionalRoleUser.ifPresent(roles::add);
-
-        user.setRoles(roles);
+        user.setRoles(getRoles(user));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return repository.save(user);
     }
@@ -83,7 +79,8 @@ public class UserServiceImpl implements UserService{
             userDb.setName(user.getName());
             //This line for password editing has been removed, because there is a separate Security function for that purpose specifically.
             userDb.setUsername(user.getUsername());
-            
+
+            userDb.setRoles(getRoles(user));
             return Optional.of(repository.save(userDb));
         }
         return Optional.empty();
@@ -93,6 +90,21 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public void deleteById(Long id) {
         repository.deleteById(id);
+    }
+
+    //We refactor our code by extracting these common lines from both the save() and the update() method, and we create
+    //the IUser interface specifically to make this method compatible with both methods.
+    private List<Role> getRoles(IUser user) {
+        List<Role> roles = new ArrayList<>();
+        Optional<Role> optionalRoleUser = roleRepository.findByName("ROLE_USER");
+        //Callback with method reference: roles::add, as an alternative to 'role -> roles.add(role)'
+        optionalRoleUser.ifPresent(roles::add);
+
+        if(user.isAdmin()) {
+            Optional<Role> optionalRoleAdmin = roleRepository.findByName("ROLE_ADMIN");
+            optionalRoleAdmin.ifPresent(roles::add);
+        }
+        return roles;
     }
 
 }
