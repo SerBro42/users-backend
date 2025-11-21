@@ -1,5 +1,6 @@
 package com.springboot.backend.sidrick.userapp.users_backend.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,8 +11,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.springboot.backend.sidrick.userapp.users_backend.entities.Role;
 import com.springboot.backend.sidrick.userapp.users_backend.entities.User;
 import com.springboot.backend.sidrick.userapp.users_backend.models.UserRequest;
+import com.springboot.backend.sidrick.userapp.users_backend.repositories.RoleRepository;
 import com.springboot.backend.sidrick.userapp.users_backend.repositories.UserRepository;
 
 import io.micrometer.common.lang.NonNull;
@@ -22,13 +25,15 @@ public class UserServiceImpl implements UserService{
     //Autowiring the repository is an option. The other option is to create a constructor
     //@Autowired
     private UserRepository repository;
+    private RoleRepository roleRepository;
 
     //Adding another variable that will be part of the constructor.
     private PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
     }
 
     //ReadOnly = true is used when this query is only to consult data, never to edit it.
@@ -51,9 +56,17 @@ public class UserServiceImpl implements UserService{
         return repository.findById(id);
     }
 
+    //Now, when we create a new User, we give it ROLE_USER by default
     @Override
     @Transactional
     public User save(User user) {
+        List<Role> roles = new ArrayList<>();
+        Optional<Role> optionalRoleUser = roleRepository.findByName("ROLE_USER");
+
+        //Callback with method reference: roles::add, as an alternative to 'role -> roles.add(role)'
+        optionalRoleUser.ifPresent(roles::add);
+
+        user.setRoles(roles);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return repository.save(user);
     }
