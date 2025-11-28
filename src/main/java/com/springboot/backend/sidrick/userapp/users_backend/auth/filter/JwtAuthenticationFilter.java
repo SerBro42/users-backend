@@ -71,7 +71,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     .claims()
                     .add("roles", new ObjectMapper().writeValueAsString(roles))
                     .add("username", username)
-                    .add("isAdmin attribute present", isAdmin)
+                    .add("isAdmin", isAdmin)
                     .build();
 
                 String jwt = Jwts.builder()
