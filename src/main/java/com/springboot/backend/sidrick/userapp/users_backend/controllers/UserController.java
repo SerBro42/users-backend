@@ -99,8 +99,8 @@ public class UserController {
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         Optional<User> userOptional = service.findById(id);
         if(userOptional.isPresent()) {
-            service.deleteById(id);
-            return ResponseEntity.noContent().build();
+            
+            return ResponseEntity.ok(service.deleteById(id));
         }
         return ResponseEntity.notFound().build();
     }

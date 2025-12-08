@@ -88,8 +88,9 @@ public class UserServiceImpl implements UserService{
 
     @Override
     @Transactional
-    public void deleteById(Long id) {
+    public Long deleteById(Long id) {
         repository.deleteById(id);
+        return id;
     }
 
     //We refactor our code by extracting these common lines from both the save() and the update() method, and we create
