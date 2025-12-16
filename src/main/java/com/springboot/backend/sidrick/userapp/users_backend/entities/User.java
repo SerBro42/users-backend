@@ -1,5 +1,6 @@
 package com.springboot.backend.sidrick.userapp.users_backend.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -47,10 +48,12 @@ public class User implements IUser{
 
     @NotEmpty
     @Email
+    @Column(unique = true)
     private String email;
 
     @NotBlank
     @Size(min=4)
+    @Column(unique = true)
     private String username;
 
     //The annotation Transient means that this field is not part of the database, it is merely an attribute of the class.
