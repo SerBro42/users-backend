@@ -1,6 +1,5 @@
 package com.springboot.backend.sidrick.userapp.users_backend.entities;
 
-import org.hibernate.annotations.Collate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
