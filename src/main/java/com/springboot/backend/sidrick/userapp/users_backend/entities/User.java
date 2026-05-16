@@ -57,8 +57,9 @@ public class User implements IUser{
     private String username;
 
     //The annotation Transient means that this field is not part of the database, it is merely an attribute of the class.
+    //We delete JsonPropery.Access.WRITE_ONLY so that admin=true/false is shown in the JSON response
     @Transient
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    //@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private boolean admin;
 
     @NotBlank

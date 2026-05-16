@@ -3,6 +3,7 @@ package com.springboot.backend.sidrick.userapp.users_backend.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,16 +40,25 @@ public class UserServiceImpl implements UserService{
 
     //ReadOnly = true is used when this query is only to consult data, never to edit it.
     //findAll() returns an iterable, but we need a list. So, we cast it as a list.
+    //In addition to returning a list of users, now it also says which ones have ROLE_ADMIN
     @Override
     @Transactional(readOnly = true)
     public List<User> findAll() {
-        return (List) this.repository.findAll();
+        return ((List<User>) this.repository.findAll()).stream().map(user -> {
+            boolean admin = user.getRoles().stream().anyMatch(role -> "ROLE_ADMIN".equals(role.getName()));
+            user.setAdmin(admin);
+            return user;
+        }).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<User> findAll(Pageable pageable) {
-        return this.repository.findAll(pageable);
+        return this.repository.findAll(pageable).map(user -> {
+            boolean admin = user.getRoles().stream().anyMatch(role -> "ROLE_ADMIN".equals(role.getName()));
+            user.setAdmin(admin);
+            return user;
+        });
     }
 
     @Override
